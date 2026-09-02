@@ -1,0 +1,173 @@
+# config/tasks.yaml
+# ==========================================
+# This file defines WHAT each agent does.
+#
+# Each task has:
+#   description  → exact instructions for the agent
+#   expected_output → what the agent must return
+#   agent        → which agent does this task
+#
+# INTERVIEW EXPLANATION:
+#   "Tasks are the actual work assignments. An agent can exist
+#    without a task — but a task always needs an agent.
+#    Think of agents as employees and tasks as their job assignments.
+#    The expected_output field is critical — it tells the agent
+#    exactly what format to return results in."
+# ==========================================
+
+parse_resume_task:
+  description: >
+    You are given the following resume text extracted from a PDF:
+
+    {resume_text}
+
+    Extract all information carefully and return a structured summary.
+    The candidate is applying for: {role}
+
+    Extract:
+    - Full name
+    - Email address
+    - Phone number
+    - All technical and soft skills (comma separated)
+    - Work experience summary (companies, roles, duration)
+    - Education details (degree, institution, year)
+    - Notable achievements or projects
+    - Estimated total years of professional experience
+
+  expected_output: >
+    A structured JSON object with these exact keys:
+    name, email, phone, skills, experience,
+    education, achievements, years_of_experience.
+    All values must be strings.
+    Return ONLY the JSON, no explanation.
+
+  agent: resume_analyst
+
+# ──────────────────────────────────────────
+
+plan_interview_task:
+  description: >
+    Using the parsed resume data below, create a tailored
+    interview plan for the {role} position.
+
+    Resume Data: {resume_data}
+
+    Create exactly 5 interview questions that:
+    - Are specific to the candidate's actual skills and background
+    - Mix technical questions (based on their skills) with behavioral ones
+    - Match difficulty to their experience level
+    - Are relevant to the {role} position
+    - Are NOT generic (no "tell me about yourself")
+
+    Also create a scoring rubric that defines what a strong,
+    average, and weak answer looks like for each question.
+
+  expected_output: >
+    A JSON object with two keys:
+    1. "questions": a list of exactly 5 question strings
+    2. "rubric": a plain text string describing scoring criteria
+    Return ONLY the JSON, no explanation.
+
+  agent: interview_strategist
+
+# ──────────────────────────────────────────
+
+conduct_interview_task:
+  description: >
+    You are conducting a live interview for the {role} position.
+    Candidate name: {candidate_name}
+
+    Current conversation history:
+    {conversation_history}
+
+    Current question being asked: {current_question}
+    Interview mode: {mode}
+
+    Based on the mode:
+    - If mode is "opening": Generate a warm greeting and ask question 1
+    - If mode is "followup": The last answer was vague, ask a follow-up
+    - If mode is "next": Acknowledge the answer and ask the next question
+    - If mode is "closing": Thank the candidate and close the interview
+
+  expected_output: >
+    A natural, conversational response as the interviewer.
+    Plain text only. Maximum 3 sentences.
+    Sound warm and professional, not robotic.
+
+  agent: ai_interviewer
+
+# ──────────────────────────────────────────
+
+evaluate_answer_task:
+  description: >
+    Evaluate the candidate's answer for the {role} position.
+
+    Question asked: {question}
+    Candidate's answer: {answer}
+    Attempt number: {attempt} out of 2
+    Scoring rubric: {rubric}
+
+    First check these rules:
+    - If answer contains skip phrases (don't know, skip, pass, no idea)
+      → decision must be SKIP, score 1
+    - If answer is less than 8 words and attempt is 1
+      → decision must be FOLLOW_UP, score 3
+    - Otherwise evaluate using the rubric
+
+    Scoring guide:
+    - 8-10: Clear, specific, well-structured with real examples
+    - 5-7:  Acceptable but could be more detailed
+    - 1-4:  Vague, irrelevant, or shows lack of knowledge
+
+    Decision rules:
+    - GOOD:      score 8-10, move on
+    - NEXT:      score 5-7, move on
+    - FOLLOW_UP: score 1-4 AND attempt is 1
+    - SKIP:      score 1-4 AND attempt is 2
+
+  expected_output: >
+    A JSON object with exactly these keys:
+    - decision: "GOOD" or "NEXT" or "FOLLOW_UP" or "SKIP"
+    - score: integer from 1 to 10
+    - reason: one sentence explaining the decision
+    Return ONLY the JSON, no explanation.
+
+  agent: answer_evaluator
+
+# ──────────────────────────────────────────
+
+generate_report_task:
+  description: >
+    Generate a comprehensive hiring report for {candidate_name}
+    who interviewed for the {role} position.
+
+    Full interview transcript:
+    {transcript}
+
+    Per-question scores: {scores}
+    Average score: {average_score} out of 10
+    Scoring rubric used: {rubric}
+    Candidate skills: {skills}
+    Candidate experience: {experience}
+
+    Scoring guide for overall_score:
+    - 80-100: Excellent, strong hire
+    - 60-79:  Good candidate, hire with confidence
+    - 40-59:  Average, hire with reservations
+    - 0-39:   Weak candidate, do not hire
+
+    Verdict rule:
+    - overall_score >= 60 → "Hire"
+    - overall_score < 60  → "No Hire"
+
+  expected_output: >
+    A JSON object with exactly these keys:
+    - final_verdict: "Hire" or "No Hire"
+    - overall_score: integer 0-100
+    - summary: 2-3 sentence assessment
+    - strengths: list of 3 strength strings
+    - weaknesses: list of 2 weakness strings
+    - recommendation: 1-2 sentences on next steps
+    Return ONLY the JSON, no explanation.
+
+  agent: report_generator

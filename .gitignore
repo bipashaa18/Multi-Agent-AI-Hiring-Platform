@@ -1,0 +1,97 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+.venv/
+env/
+
+# =========================
+# Environment Variables / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# macOS / Windows
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# IDEs / Editors
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# =========================
+# Type Checking / Linters
+# =========================
+.mypy_cache/
+.pyright/
+.ruff_cache/
+
+# =========================
+# Build / Packaging
+# =========================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Streamlit Secrets
+# =========================
+.streamlit/secrets.toml
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Generated AI / Vector Data
+# =========================
+*.faiss
+*.pkl
+*.pickle
+vectorstore/
+chroma/
+.chroma/
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.temp
+*.bak
+
+# =========================
+# OS-specific
+# =========================
+*.swp
+*.swo
